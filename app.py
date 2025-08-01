@@ -47,7 +47,14 @@ if not OPENAI_API_KEY:
 
 # Инициализация клиентов
 twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN) if TWILIO_ACCOUNT_SID else None
-openai_client = openai.OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
+
+# Инициализация OpenAI клиента с обработкой ошибок
+try:
+    openai_client = openai.OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
+    logger.info("OpenAI клиент успешно инициализирован")
+except Exception as e:
+    logger.error(f"Ошибка инициализации OpenAI клиента: {e}")
+    openai_client = None
 
 # Состояния пользователей
 user_states = {}
