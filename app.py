@@ -37,6 +37,14 @@ TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 # Конфигурация OpenAI GPT-4 Turbo
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
+# Проверка обязательных переменных окружения
+if not TWILIO_ACCOUNT_SID:
+    logger.warning("TWILIO_ACCOUNT_SID не установлен")
+if not TWILIO_AUTH_TOKEN:
+    logger.warning("TWILIO_AUTH_TOKEN не установлен")
+if not OPENAI_API_KEY:
+    logger.warning("OPENAI_API_KEY не установлен")
+
 # Инициализация клиентов
 twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN) if TWILIO_ACCOUNT_SID else None
 openai_client = openai.OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
@@ -328,7 +336,8 @@ def health_check():
         'bot_name': bot.name,
         'bot_age': bot.age,
         'bot_country': bot.country,
-        'active_users': len(user_states)
+        'active_users': len(user_states),
+        'environment': os.getenv('RAILWAY_ENVIRONMENT', 'development')
     })
 
 @app.route('/', methods=['GET'])
@@ -347,9 +356,19 @@ def index():
         'endpoints': {
             'webhook': '/webhook',
             'health': '/health'
-        }
+        },
+        'status': 'running'
+    })
+
+@app.route('/test', methods=['GET'])
+def test():
+    """Тестовая страница"""
+    return jsonify({
+        'status': 'ok',
+        'message': 'Elena WhatsApp Bot is running!',
+        'timestamp': datetime.now().isoformat()
     })
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True) 
+    app.run(host='0.0.0.0', port=port, debug=False) 
