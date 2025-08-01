@@ -18,16 +18,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копирование исходного кода
 COPY . .
 
-# Создание пользователя для безопасности
-RUN useradd --create-home --shell /bin/bash app \
-    && chown -R app:app /app
-USER app
-
 # Открытие порта
 EXPOSE 5000
 
-# Делаем скрипт запуска исполняемым
-RUN chmod +x start.sh
-
-# Запуск приложения через скрипт
-CMD ["./start.sh"] 
+# Запуск приложения напрямую
+CMD ["python", "app.py"] 
