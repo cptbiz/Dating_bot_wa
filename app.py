@@ -89,18 +89,18 @@ class DatingGirlBot:
             'values': 'family, honesty, mutual respect, shared interests'
         }
         
-        # Системный промпт для GPT-4 Turbo - КОРОТКИЕ ОТВЕТЫ
+        # Системный промпт для GPT-4 Turbo - ЕСТЕСТВЕННЫЕ КОРОТКИЕ ОТВЕТЫ
         self.system_prompt = f"""
 You are {self.name}, a {self.age}-year-old woman from {self.country}. You are intelligent, caring, and looking for a serious relationship with an American man aged 40+.
 
-IMPORTANT: Keep responses SHORT and NATURAL (1-2 sentences max). Like a real person typing on WhatsApp.
+IMPORTANT: Keep responses VERY SHORT and NATURAL (1-3 words max). Like a real person typing on WhatsApp.
 
 Your personality:
 - Warm, caring, and intelligent
 - Independent but values partnership
 - Flirty but respectful and classy
-- Asks thoughtful questions to get to know the man
-- Shows genuine interest in his life, work, and interests
+- Asks simple questions to get to know the man
+- Shows genuine interest in his life and interests
 - Speaks English with a slight accent (natural, not exaggerated)
 
 Your background:
@@ -113,18 +113,19 @@ Your background:
 Communication style:
 - Use emojis naturally (💕, 😊, 🌹, 💋, etc.)
 - Be warm and engaging
-- Keep responses SHORT (1-2 sentences)
+- Keep responses VERY SHORT (1-3 words)
 - Be authentic and genuine
-- Sometimes ask follow-up questions
+- Ask simple questions
 - Show interest in his responses
 
 RESPONSE RULES:
-- MAXIMUM 2 sentences per response
+- MAXIMUM 3 words per response
 - Keep it casual and natural
 - Use simple, everyday language
-- Add 1-2 emojis naturally
-- Sometimes just acknowledge and ask a question
+- Add 1 emoji naturally
+- Sometimes just acknowledge with "Great)" or "Yes)"
 - Be conversational, not formal
+- Answer questions directly and honestly
 
 IMPORTANT RULES:
 - NEVER ask for money, gifts, or financial help
@@ -136,7 +137,17 @@ IMPORTANT RULES:
 - Ask about his interests, work, family, hobbies
 - Share your own interests and experiences naturally
 
-Current conversation context: You're chatting with an American man on a dating website. Keep responses SHORT and NATURAL like a real person.
+EXAMPLES OF GOOD RESPONSES:
+- "Hi 😊"
+- "Hello 💕"
+- "Great) 😊"
+- "Yes) 💕"
+- "Sure 😊"
+- "I do 💕"
+- "Tell me about you 😊"
+- "What interests you? 💕"
+
+Current conversation context: You're chatting with an American man on a dating website. Keep responses VERY SHORT and NATURAL like a real person.
 """
 
     def validate_audio_url(self, audio_url):
@@ -222,7 +233,7 @@ Current conversation context: You're chatting with an American man on a dating w
             response = openai_client.chat.completions.create(
                 model="gpt-4-turbo-preview",
                 messages=messages,
-                max_tokens=80,  # Уменьшил для коротких ответов
+                max_tokens=20,  # Очень короткие ответы
                 temperature=0.9,  # Увеличил для более естественных ответов
                 presence_penalty=0.1,
                 frequency_penalty=0.1
@@ -235,18 +246,18 @@ Current conversation context: You're chatting with an American man on a dating w
             return self.get_fallback_response(user_message)
 
     def get_fallback_response(self, user_message):
-        """Резервные ответы если GPT недоступен - КОРОТКИЕ"""
+        """Резервные ответы если GPT недоступен - ЕСТЕСТВЕННЫЕ КОРОТКИЕ"""
         fallback_responses = [
-            "That's really interesting! Tell me more about yourself 💕",
-            "I love hearing about your experiences! What else do you enjoy doing? 😊",
-            "You seem like such a wonderful person! What are you looking for in a relationship? 🌹",
-            "I'm really enjoying our conversation! What makes you happy? 💕",
-            "You sound amazing! I'd love to know more about your life and interests 😊",
-            "That's so nice to hear! What do you like to do for fun? 🌹",
-            "I love that! Tell me more about yourself 💕",
-            "You sound wonderful! What brings you joy? 😊",
-            "That's really sweet! What are your hobbies? 🌹",
-            "I'm enjoying our chat! What's your favorite thing to do? 💕"
+            "Hi 😊",
+            "Hello 💕",
+            "Great) 😊",
+            "Yes) 💕",
+            "Sure 😊",
+            "I do 💕",
+            "Tell me about you 😊",
+            "What interests you? 💕",
+            "How are you? 😊",
+            "Nice to meet you 💕"
         ]
         
         import random
@@ -358,11 +369,11 @@ Current conversation context: You're chatting with an American man on a dating w
         
         # Простые приветствия
         if message_lower in ['hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening']:
-            return "Hi! 😊"
+            return "Hi 😊"
         elif message_lower in ['how are you', 'how are you doing', 'how do you do']:
-            return "I'm doing great, thanks! 😊"
+            return "Great) 😊"
         elif message_lower in ['what\'s up', 'sup', 'wassup']:
-            return "Hey! Not much, just here 😊"
+            return "Hey 😊"
         else:
             # Для других сообщений используем GPT
             return self.get_gpt_response(message, "")
@@ -370,32 +381,32 @@ Current conversation context: You're chatting with an American man on a dating w
     def get_personal_story(self):
         """Получение личной истории"""
         personal_stories = [
-            "Today was such a great day! I went for a walk in the park with my friends 💕",
-            "I had an amazing day! I was cooking my favorite Ukrainian dish - borscht 😊",
-            "It's been a wonderful day! I was reading a book in my favorite coffee shop 🌹",
-            "Today was perfect! I went to yoga class and then met my sister for lunch 💕",
-            "I had such a nice day! I was taking photos in the city center 😊",
-            "Today was lovely! I was practicing my English and watching movies 🌹",
-            "It's been a beautiful day! I was walking by the river and enjoying the sunset 💕",
-            "Today was fantastic! I was cooking and listening to music 😊",
-            "I had a wonderful day! I was shopping and then had coffee with friends 🌹",
-            "Today was amazing! I was working from home and then went for a walk 💕"
+            "I love cooking 💕",
+            "I enjoy reading 😊",
+            "I like traveling 🌹",
+            "I love yoga 💕",
+            "I enjoy photography 😊",
+            "I like music 🌹",
+            "I love walking 💕",
+            "I enjoy coffee 😊",
+            "I like movies 🌹",
+            "I love nature 💕"
         ]
         return random.choice(personal_stories)
 
     def get_question_response(self, user_message):
         """Получение ответа с вопросом после истории"""
         question_responses = [
-            "How about you? How was your day? 😊",
-            "What about you? What did you do today? 💕",
-            "Tell me about your day! How was it? 🌹",
-            "What's your story? How was your day? 😊",
-            "I'd love to hear about your day! What did you do? 💕",
-            "How was your day? Tell me something interesting! 🌹",
-            "What about your day? I'm curious to hear! 😊",
-            "How are you doing? What's new with you? 💕",
-            "What's happening in your life? Tell me! 🌹",
-            "How are things with you? What's your day like? 😊"
+            "How about you? 😊",
+            "What about you? 💕",
+            "Tell me about you 🌹",
+            "What's your story? 😊",
+            "Tell me about you 💕",
+            "How are you? 🌹",
+            "What about you? 😊",
+            "How are you doing? 💕",
+            "What interests you? 🌹",
+            "How are things? 😊"
         ]
         return random.choice(question_responses)
 
@@ -420,14 +431,14 @@ Current conversation context: You're chatting with an American man on a dating w
     def get_auto_message(self):
         """Получение авто-сообщения через час"""
         auto_messages = [
-            "Hey! I was thinking about our conversation earlier 💕",
-            "Hi! How's your day going? 😊",
-            "Hello! I hope you're having a wonderful day 🌹",
-            "Hey there! Just wanted to say hi 💕",
-            "Hi! What's new with you? 😊",
-            "Hello! I'm curious how your day is going 🌹",
-            "Hey! I enjoyed our chat earlier 💕",
-            "Hi! How are things with you? 😊"
+            "Hey 💕",
+            "Hi 😊",
+            "Hello 🌹",
+            "Hey there 💕",
+            "Hi 😊",
+            "Hello 🌹",
+            "Hey 💕",
+            "Hi 😊"
         ]
         return random.choice(auto_messages)
 
