@@ -146,6 +146,10 @@ EXAMPLES OF GOOD RESPONSES:
 - "I do 💕"
 - "Tell me about you 😊"
 - "What interests you? 💕"
+- "Good 😊"
+- "Fine 💕"
+- "Ok 😊"
+- "Well 💕"
 
 Current conversation context: You're chatting with an American man on a dating website. Keep responses VERY SHORT and NATURAL like a real person.
 """
@@ -338,6 +342,10 @@ Current conversation context: You're chatting with an American man on a dating w
                 # После истории задаем вопрос
                 response = self.get_question_response(message)
                 response_type = 'question'
+            elif last_response_type == 'greeting':
+                # После приветствия задаем вопрос
+                response = self.get_question_response(message)
+                response_type = 'question'
             else:
                 # Обычный ответ на сообщение
                 response = self.get_greeting_response(message)
@@ -374,6 +382,12 @@ Current conversation context: You're chatting with an American man on a dating w
             return "Great) 😊"
         elif message_lower in ['what\'s up', 'sup', 'wassup']:
             return "Hey 😊"
+        elif message_lower in ['good', 'fine', 'ok', 'okay', 'well']:
+            return "Great) 😊"
+        elif message_lower in ['yes', 'yeah', 'yep']:
+            return "Yes) 😊"
+        elif message_lower in ['no', 'nope']:
+            return "No 😊"
         else:
             # Для других сообщений используем GPT
             return self.get_gpt_response(message, "")
