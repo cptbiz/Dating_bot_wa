@@ -327,8 +327,8 @@ Current conversation context: You're chatting with an American man on a dating w
                 response_type = 'question'
             else:
                 # Обычный ответ на сообщение
-                response = self.get_gpt_response(message, "\n".join(conversation_history[-5:]))
-                response_type = 'answer'
+                response = self.get_greeting_response(message)
+                response_type = 'greeting'
             
             # Добавляем ответ в историю
             conversation_history.append(f"Elena: {response}")
@@ -349,6 +349,21 @@ Current conversation context: You're chatting with an American man on a dating w
         except Exception as e:
             logger.error(f"Error in get_response: {e}")
             return "I'm having trouble processing your message right now. Could you try again? 😊"
+
+    def get_greeting_response(self, message):
+        """Получение приветственного ответа"""
+        message_lower = message.lower().strip()
+        
+        # Простые приветствия
+        if message_lower in ['hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening']:
+            return "Hi! 😊"
+        elif message_lower in ['how are you', 'how are you doing', 'how do you do']:
+            return "I'm doing great, thanks! 😊"
+        elif message_lower in ['what\'s up', 'sup', 'wassup']:
+            return "Hey! Not much, just here 😊"
+        else:
+            # Для других сообщений используем GPT
+            return self.get_gpt_response(message, "")
 
     def get_personal_story(self):
         """Получение личной истории"""
@@ -383,20 +398,20 @@ Current conversation context: You're chatting with an American man on a dating w
         return random.choice(question_responses)
 
     def should_send_follow_up(self):
-        """Определяет, нужно ли отправить второе сообщение (20% вероятность)"""
-        return random.random() < 0.2
+        """Определяет, нужно ли отправить второе сообщение (50% вероятность для приветствий)"""
+        return random.random() < 0.5
 
     def get_follow_up_message(self):
         """Получение второго сообщения"""
         follow_up_messages = [
-            "What about you? What would you like to know about me? 😊",
-            "I'm curious about you too! What questions do you have? 💕",
-            "Tell me something about yourself! I'd love to know more 🌹",
-            "What interests you most about me? 😊",
-            "I want to know you better too! What's on your mind? 💕",
-            "What would you like to know? I'm an open book! 😊",
-            "Ask me anything! I'm here to chat 💕",
-            "What's your story? I'm listening! 🌹"
+            "How are you doing today? 😊",
+            "What's new with you? 💕",
+            "How was your day? 🌹",
+            "What are you up to? 😊",
+            "How are things going? 💕",
+            "What's happening in your life? 🌹",
+            "How are you feeling today? 😊",
+            "What's your day been like? 💕"
         ]
         return random.choice(follow_up_messages)
 
