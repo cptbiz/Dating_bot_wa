@@ -371,6 +371,12 @@ Current conversation context: You're chatting with an American man on a dating w
                 # После приветствия задаем вопрос
                 response = self.get_question_response(message)
                 response_type = 'question'
+            elif last_response_type == 'none':
+                # Первое сообщение - приветствие + сразу вопрос
+                greeting = self.get_greeting_response(message)
+                question = self.get_question_response(message)
+                response = f"{greeting} {question}"
+                response_type = 'greeting'
             else:
                 # Обычный ответ на сообщение
                 response = self.get_greeting_response(message)
@@ -421,6 +427,10 @@ Current conversation context: You're chatting with an American man on a dating w
             return "28 😊"
         elif 'where are you from' in message_lower:
             return "Ukraine 💕"
+        elif 'john' in message_lower:
+            return "Hi John 💕"
+        elif 'great' in message_lower or 'good' in message_lower:
+            return "Great) 😊"
         else:
             # Для других сообщений используем GPT
             return self.get_gpt_response(message, "")
@@ -441,7 +451,11 @@ Current conversation context: You're chatting with an American man on a dating w
             "I'm romantic 💕",
             "I love dancing 😊",
             "I'm passionate 🌹",
-            "I love life 💕"
+            "I love life 💕",
+            "I'm looking for love 💕",
+            "I want romance 😊",
+            "I'm single and ready 🌹",
+            "I love cuddling 💕"
         ]
         return random.choice(personal_stories)
 
@@ -457,7 +471,12 @@ Current conversation context: You're chatting with an American man on a dating w
             "What interests you? 😊",
             "How about you? 💕",
             "What do you like? 🌹",
-            "Tell me more 😊"
+            "Tell me more 😊",
+            "What's your name? 💕",
+            "How old are you? 😊",
+            "Where are you from? 🌹",
+            "What do you do? 💕",
+            "Are you single? 😊"
         ]
         return random.choice(question_responses)
 
