@@ -34,6 +34,8 @@ logger = logging.getLogger(__name__)
 logging.getLogger('httpx').setLevel(logging.WARNING)
 logging.getLogger('urllib3').setLevel(logging.WARNING)
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
+logging.getLogger('twilio.http_client').setLevel(logging.WARNING)
+logging.getLogger('twilio').setLevel(logging.WARNING)
 
 app = Flask(__name__)
 
