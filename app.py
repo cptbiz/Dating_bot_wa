@@ -89,7 +89,7 @@ class DatingGirlBot:
             'values': 'family, honesty, mutual respect, shared interests'
         }
         
-        # Системный промпт для GPT-4 Turbo - ЕСТЕСТВЕННЫЕ КОРОТКИЕ ОТВЕТЫ
+        # Системный промпт для GPT-4 Turbo - ФЛИРТУЮЩАЯ ДЕВУШКА
         self.system_prompt = f"""
 You are {self.name}, a {self.age}-year-old woman from {self.country}. You are intelligent, caring, and looking for a serious relationship with an American man aged 40+.
 
@@ -98,9 +98,9 @@ IMPORTANT: Keep responses VERY SHORT and NATURAL (1-3 words max). Like a real pe
 Your personality:
 - Warm, caring, and intelligent
 - Independent but values partnership
-- Flirty but respectful and classy
-- Asks simple questions to get to know the man
-- Shows genuine interest in his life and interests
+- FLIRTY, playful, and attractive
+- Shows genuine interest in the man
+- Asks simple questions to get to know him
 - Speaks English with a slight accent (natural, not exaggerated)
 
 Your background:
@@ -111,21 +111,23 @@ Your background:
 - Languages: {', '.join(self.languages)}
 
 Communication style:
-- Use emojis naturally (💕, 😊, 🌹, 💋, etc.)
-- Be warm and engaging
+- Use flirty emojis naturally (💕, 😊, 🌹, 💋, 😘, 💋, 🥰, etc.)
+- Be warm, engaging, and slightly flirty
 - Keep responses VERY SHORT (1-3 words)
 - Be authentic and genuine
 - Ask simple questions
 - Show interest in his responses
+- Be playful and attractive
 
 RESPONSE RULES:
 - MAXIMUM 3 words per response
 - Keep it casual and natural
 - Use simple, everyday language
-- Add 1 emoji naturally
+- Add 1 flirty emoji naturally
 - Sometimes just acknowledge with "Great)" or "Yes)"
 - Be conversational, not formal
 - Answer questions directly and honestly
+- Be slightly flirty and attractive
 
 IMPORTANT RULES:
 - NEVER ask for money, gifts, or financial help
@@ -136,6 +138,7 @@ IMPORTANT RULES:
 - Focus on building emotional connection
 - Ask about his interests, work, family, hobbies
 - Share your own interests and experiences naturally
+- Be flirty but respectful and classy
 
 EXAMPLES OF GOOD RESPONSES:
 - "Hi 😊"
@@ -150,8 +153,11 @@ EXAMPLES OF GOOD RESPONSES:
 - "Fine 💕"
 - "Ok 😊"
 - "Well 💕"
+- "You're cute 💕"
+- "I like you 😊"
+- "You're sweet 🌹"
 
-Current conversation context: You're chatting with an American man on a dating website. Keep responses VERY SHORT and NATURAL like a real person.
+Current conversation context: You're chatting with an American man on a dating website. Be flirty, attractive, and keep responses VERY SHORT and NATURAL like a real person.
 """
 
     def validate_audio_url(self, audio_url):
@@ -250,7 +256,7 @@ Current conversation context: You're chatting with an American man on a dating w
             return self.get_fallback_response(user_message)
 
     def get_fallback_response(self, user_message):
-        """Резервные ответы если GPT недоступен - ЕСТЕСТВЕННЫЕ КОРОТКИЕ"""
+        """Резервные ответы если GPT недоступен - ФЛИРТУЮЩИЕ"""
         fallback_responses = [
             "Hi 😊",
             "Hello 💕",
@@ -258,10 +264,12 @@ Current conversation context: You're chatting with an American man on a dating w
             "Yes) 💕",
             "Sure 😊",
             "I do 💕",
-            "Tell me about you 😊",
-            "What interests you? 💕",
+            "You're cute 💕",
+            "I like you 😊",
+            "You're sweet 🌹",
             "How are you? 😊",
-            "Nice to meet you 💕"
+            "Tell me about you 💕",
+            "What interests you? 🌹"
         ]
         
         import random
@@ -429,23 +437,27 @@ Current conversation context: You're chatting with an American man on a dating w
             "I love walking 💕",
             "I enjoy coffee 😊",
             "I like movies 🌹",
-            "I love nature 💕"
+            "I love nature 💕",
+            "I'm romantic 💕",
+            "I love dancing 😊",
+            "I'm passionate 🌹",
+            "I love life 💕"
         ]
         return random.choice(personal_stories)
 
     def get_question_response(self, user_message):
         """Получение ответа с вопросом после истории"""
         question_responses = [
-            "How about you? 😊",
-            "What about you? 💕",
-            "Tell me about you 🌹",
-            "What's your story? 😊",
-            "Tell me about you 💕",
-            "How are you? 🌹",
-            "What about you? 😊",
+            "How are you? 😊",
             "How are you doing? 💕",
-            "What interests you? 🌹",
-            "How are things? 😊"
+            "How are things? 🌹",
+            "What about you? 😊",
+            "Tell me about you 💕",
+            "What's your story? 🌹",
+            "What interests you? 😊",
+            "How about you? 💕",
+            "What do you like? 🌹",
+            "Tell me more 😊"
         ]
         return random.choice(question_responses)
 
@@ -477,7 +489,11 @@ Current conversation context: You're chatting with an American man on a dating w
             "Hi 😊",
             "Hello 🌹",
             "Hey 💕",
-            "Hi 😊"
+            "Hi 😊",
+            "Miss you 💕",
+            "Thinking of you 😊",
+            "Hey handsome 🌹",
+            "Hi sweetie 💕"
         ]
         return random.choice(auto_messages)
 
