@@ -290,9 +290,101 @@ Current conversation context: You're chatting with an American man on a dating w
         """Получение случайной задержки 20-40 секунд"""
         return random.randint(20, 40)
 
+    def get_response(self, user_id, message, media_url=None):
+        """Получение ответа бота - КОРОТКИЙ И ЕСТЕСТВЕННЫЙ"""
+        try:
+            # Обработка голосового сообщения
+            if media_url and self.validate_audio_url(media_url):
+                transcribed_text = self.transcribe_audio(media_url)
+                if transcribed_text:
+                    message = transcribed_text
+                    logger.info(f"Voice message transcribed: {transcribed_text}")
+                else:
+                    return "I'm sorry, I couldn't understand your voice message. Could you please type your message? 😊"
+            
+            # Проверка на нарушения
+            violations = self.check_violations(message)
+            if violations:
+                logger.warning(f"Violation detected for user {user_id}: {violations}")
+                return self.handle_violation(violations)
+            
+            # Получение истории диалога
+            state = user_states.get(user_id, {})
+            conversation_history = state.get('conversation_history', [])
+            last_response_type = state.get('last_response_type', 'none')
+            
+            # Добавляем сообщение пользователя в историю
+            conversation_history.append(f"User: {message}")
+            
+            # Определяем тип ответа
+            if last_response_type == 'question' and '?' in message.lower():
+                # Пользователь ответил на вопрос - даем личную историю
+                response = self.get_personal_story()
+                response_type = 'story'
+            elif last_response_type == 'story':
+                # После истории задаем вопрос
+                response = self.get_question_response(message)
+                response_type = 'question'
+            else:
+                # Обычный ответ на сообщение
+                response = self.get_gpt_response(message, "\n".join(conversation_history[-5:]))
+                response_type = 'answer'
+            
+            # Добавляем ответ в историю
+            conversation_history.append(f"Elena: {response}")
+            
+            # Обновляем состояние пользователя
+            user_states[user_id] = {
+                'conversation_history': conversation_history[-10:],
+                'last_interaction': datetime.now().isoformat(),
+                'last_user_message_time': datetime.now().isoformat(),
+                'last_response_type': response_type
+            }
+            
+            # Планируем авто-сообщение через час
+            self.schedule_auto_message(user_id)
+            
+            return response
+            
+        except Exception as e:
+            logger.error(f"Error in get_response: {e}")
+            return "I'm having trouble processing your message right now. Could you try again? 😊"
+
+    def get_personal_story(self):
+        """Получение личной истории"""
+        personal_stories = [
+            "Today was such a great day! I went for a walk in the park with my friends 💕",
+            "I had an amazing day! I was cooking my favorite Ukrainian dish - borscht 😊",
+            "It's been a wonderful day! I was reading a book in my favorite coffee shop 🌹",
+            "Today was perfect! I went to yoga class and then met my sister for lunch 💕",
+            "I had such a nice day! I was taking photos in the city center 😊",
+            "Today was lovely! I was practicing my English and watching movies 🌹",
+            "It's been a beautiful day! I was walking by the river and enjoying the sunset 💕",
+            "Today was fantastic! I was cooking and listening to music 😊",
+            "I had a wonderful day! I was shopping and then had coffee with friends 🌹",
+            "Today was amazing! I was working from home and then went for a walk 💕"
+        ]
+        return random.choice(personal_stories)
+
+    def get_question_response(self, user_message):
+        """Получение ответа с вопросом после истории"""
+        question_responses = [
+            "How about you? How was your day? 😊",
+            "What about you? What did you do today? 💕",
+            "Tell me about your day! How was it? 🌹",
+            "What's your story? How was your day? 😊",
+            "I'd love to hear about your day! What did you do? 💕",
+            "How was your day? Tell me something interesting! 🌹",
+            "What about your day? I'm curious to hear! 😊",
+            "How are you doing? What's new with you? 💕",
+            "What's happening in your life? Tell me! 🌹",
+            "How are things with you? What's your day like? 😊"
+        ]
+        return random.choice(question_responses)
+
     def should_send_follow_up(self):
-        """Определяет, нужно ли отправить второе сообщение (30% вероятность)"""
-        return random.random() < 0.3
+        """Определяет, нужно ли отправить второе сообщение (20% вероятность)"""
+        return random.random() < 0.2
 
     def get_follow_up_message(self):
         """Получение второго сообщения"""
@@ -377,53 +469,6 @@ Current conversation context: You're chatting with an American man on a dating w
         thread = threading.Thread(target=send_auto_message)
         thread.daemon = True
         thread.start()
-
-    def get_response(self, user_id, message, media_url=None):
-        """Получение ответа бота - КОРОТКИЙ И ЕСТЕСТВЕННЫЙ"""
-        try:
-            # Обработка голосового сообщения
-            if media_url and self.validate_audio_url(media_url):
-                transcribed_text = self.transcribe_audio(media_url)
-                if transcribed_text:
-                    message = transcribed_text
-                    logger.info(f"Voice message transcribed: {transcribed_text}")
-                else:
-                    return "I'm sorry, I couldn't understand your voice message. Could you please type your message? 😊"
-            
-            # Проверка на нарушения
-            violations = self.check_violations(message)
-            if violations:
-                logger.warning(f"Violation detected for user {user_id}: {violations}")
-                return self.handle_violation(violations)
-            
-            # Получение истории диалога
-            state = user_states.get(user_id, {})
-            conversation_history = state.get('conversation_history', [])
-            
-            # Добавляем сообщение пользователя в историю
-            conversation_history.append(f"User: {message}")
-            
-            # Получаем ответ от GPT-4 Turbo
-            response = self.get_gpt_response(message, "\n".join(conversation_history[-5:]))  # Последние 5 сообщений
-            
-            # Добавляем ответ в историю
-            conversation_history.append(f"Elena: {response}")
-            
-            # Обновляем состояние пользователя
-            user_states[user_id] = {
-                'conversation_history': conversation_history[-10:],  # Храним последние 10 сообщений
-                'last_interaction': datetime.now().isoformat(),
-                'last_user_message_time': datetime.now().isoformat()
-            }
-            
-            # Планируем авто-сообщение через час
-            self.schedule_auto_message(user_id)
-            
-            return response
-            
-        except Exception as e:
-            logger.error(f"Error in get_response: {e}")
-            return "I'm having trouble processing your message right now. Could you try again? 😊"
 
 # Инициализация бота
 bot = DatingGirlBot()
