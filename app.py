@@ -373,16 +373,16 @@ Current conversation context: You're chatting with an American man on a dating w
             elif last_response_type == 'question':
                 # Пользователь ответил на вопрос - даем личную историю + сразу вопрос
                 story = self.get_personal_story()
-                question = self.get_question_response(message)
+                question = self.get_question_response(message, user_id)
                 response = f"{story} {question}"
                 response_type = 'story'
             elif last_response_type == 'story':
                 # После истории задаем вопрос
-                response = self.get_question_response(message)
+                response = self.get_question_response(message, user_id)
                 response_type = 'question'
             elif last_response_type == 'greeting':
                 # После приветствия задаем вопрос
-                response = self.get_question_response(message)
+                response = self.get_question_response(message, user_id)
                 response_type = 'question'
             elif last_response_type == 'none':
                 # Первое сообщение - только приветствие
@@ -401,7 +401,8 @@ Current conversation context: You're chatting with an American man on a dating w
                 'conversation_history': conversation_history[-10:],
                 'last_interaction': datetime.now().isoformat(),
                 'last_user_message_time': datetime.now().isoformat(),
-                'last_response_type': response_type
+                'last_response_type': response_type,
+                'asked_questions': state.get('asked_questions', [])
             }
             
             # Планируем авто-сообщение через час
@@ -486,39 +487,75 @@ Current conversation context: You're chatting with an American man on a dating w
         ]
         return random.choice(personal_stories)
 
-    def get_question_response(self, user_message):
-        """Получение ответа с вопросом после истории"""
-        question_responses = [
-            "How are you? 😊",
-            "How are you doing? 💕",
-            "How are things? 🌹",
-            "What about you? 😊",
-            "Tell me about you 💕",
-            "What's your story? 🌹",
-            "What interests you? 😊",
-            "How about you? 💕",
-            "What do you like? 🌹",
-            "Tell me more 😊",
-            "What's your name? 💕",
-            "How old are you? 😊",
-            "Where are you from? 🌹",
-            "What do you do? 💕",
-            "Are you single? 😊",
-            "Do you like kissing? 💕",
-            "Are you romantic? 😊",
-            "Do you like cuddling? 🌹",
-            "Are you passionate? 💕",
-            "Do you like dark bars? 😊",
-            "Are you ready for love? 🌹",
-            "Do you like Russian girls? 💕",
-            "Are you handsome? 😊",
-            "Do you like Moscow? 🌹",
-            "Are you romantic? 💕",
-            "Do you like kissing? 😊",
-            "Are you single? 🌹",
-            "Do you like cuddling? 💕"
+    def get_question_response(self, user_message, user_id=None):
+        """Получение уникального вопроса"""
+        all_questions = [
+            "How are you?",
+            "How are you doing?",
+            "How are things?",
+            "What about you?",
+            "Tell me about you",
+            "What's your story?",
+            "What interests you?",
+            "How about you?",
+            "What do you like?",
+            "Tell me more",
+            "What's your name?",
+            "How old are you?",
+            "Where are you from?",
+            "What do you do?",
+            "Are you single?",
+            "Do you like kissing?",
+            "Are you romantic?",
+            "Do you like cuddling?",
+            "Are you passionate?",
+            "Do you like dark bars?",
+            "Are you ready for love?",
+            "Do you like Russian girls?",
+            "Are you handsome?",
+            "Do you like Moscow?",
+            "Are you romantic?",
+            "Do you like kissing?",
+            "Are you single?",
+            "Do you like cuddling?"
         ]
-        return random.choice(question_responses)
+        
+        # Если есть user_id, проверяем уже заданные вопросы
+        if user_id:
+            state = user_states.get(user_id, {})
+            asked_questions = state.get('asked_questions', [])
+            
+            # Фильтруем уже заданные вопросы
+            available_questions = [q for q in all_questions if q not in asked_questions]
+            
+            if available_questions:
+                question = random.choice(available_questions)
+                # Добавляем в список заданных вопросов
+                asked_questions.append(question)
+                user_states[user_id]['asked_questions'] = asked_questions
+                
+                # Добавляем эмодзи только через 2-3 сообщения
+                message_count = len(state.get('conversation_history', []))
+                if message_count % 3 == 0:  # Каждое 3-е сообщение
+                    emojis = ["😊", "💕", "🌹"]
+                    question += f" {random.choice(emojis)}"
+                
+                return question
+            else:
+                # Если все вопросы заданы, начинаем заново
+                user_states[user_id]['asked_questions'] = []
+                question = random.choice(all_questions)
+                
+                # Добавляем эмодзи только через 2-3 сообщения
+                message_count = len(state.get('conversation_history', []))
+                if message_count % 3 == 0:  # Каждое 3-е сообщение
+                    emojis = ["😊", "💕", "🌹"]
+                    question += f" {random.choice(emojis)}"
+                
+                return question
+        else:
+            question = random.choice(all_questions)
+            return question
 
     def should_send_follow_up(self):
         """Определяет, нужно ли отправить второе сообщение (50% вероятность для приветствий)"""
@@ -644,7 +681,7 @@ def webhook():
         
         if last_response_type == 'greeting' and len(state.get('conversation_history', [])) <= 2:
             # Отправляем вопрос "Как дела?" через 5-10 секунд
-            follow_up_question = bot.get_question_response("")
+            follow_up_question = bot.get_question_response("", sender)
             follow_up_delay = delay + random.randint(5, 10)
             bot.send_delayed_message(sender, follow_up_question, follow_up_delay)
             logger.info(f"Запланирован второй вопрос через {follow_up_delay} секунд: {follow_up_question}")
