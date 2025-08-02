@@ -20,14 +20,22 @@ import requests
 from pydub import AudioSegment
 import speech_recognition as sr
 
-# Загружаем переменные окружения
-load_dotenv()
-
 # Настройка логирования
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
+# Отключаем лишние логи
+logging.getLogger('httpx').setLevel(logging.WARNING)
+logging.getLogger('urllib3').setLevel(logging.WARNING)
+logging.getLogger('werkzeug').setLevel(logging.WARNING)
+
 app = Flask(__name__)
+
+# Загружаем переменные окружения
+load_dotenv()
 
 # Конфигурация Twilio
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
