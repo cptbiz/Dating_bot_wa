@@ -267,6 +267,11 @@ Current conversation context: You're chatting with an American man on a dating w
             "You're cute 💕",
             "I like you 😊",
             "You're sweet 🌹",
+            "You're handsome 💕",
+            "I want you 😊",
+            "You're amazing 🌹",
+            "I'm attracted to you 💕",
+            "You're perfect 😊",
             "How are you? 😊",
             "Tell me about you 💕",
             "What interests you? 🌹"
@@ -372,10 +377,8 @@ Current conversation context: You're chatting with an American man on a dating w
                 response = self.get_question_response(message)
                 response_type = 'question'
             elif last_response_type == 'none':
-                # Первое сообщение - приветствие + сразу вопрос
-                greeting = self.get_greeting_response(message)
-                question = self.get_question_response(message)
-                response = f"{greeting} {question}"
+                # Первое сообщение - только приветствие
+                response = self.get_greeting_response(message)
                 response_type = 'greeting'
             else:
                 # Обычный ответ на сообщение
@@ -431,6 +434,10 @@ Current conversation context: You're chatting with an American man on a dating w
             return "Hi John 💕"
         elif 'great' in message_lower or 'good' in message_lower:
             return "Great) 😊"
+        elif 'i\'m good' in message_lower or 'i am good' in message_lower:
+            return "Great) 😊"
+        elif 'and you' in message_lower:
+            return "Great) 😊"
         else:
             # Для других сообщений используем GPT
             return self.get_gpt_response(message, "")
@@ -455,7 +462,13 @@ Current conversation context: You're chatting with an American man on a dating w
             "I'm looking for love 💕",
             "I want romance 😊",
             "I'm single and ready 🌹",
-            "I love cuddling 💕"
+            "I love cuddling 💕",
+            "I love kissing 💕",
+            "I'm passionate 😊",
+            "I love romance 🌹",
+            "I want to cuddle 💕",
+            "I love dark bars 😊",
+            "I'm romantic 🌹"
         ]
         return random.choice(personal_stories)
 
@@ -476,7 +489,13 @@ Current conversation context: You're chatting with an American man on a dating w
             "How old are you? 😊",
             "Where are you from? 🌹",
             "What do you do? 💕",
-            "Are you single? 😊"
+            "Are you single? 😊",
+            "Do you like kissing? 💕",
+            "Are you romantic? 😊",
+            "Do you like cuddling? 🌹",
+            "Are you passionate? 💕",
+            "Do you like dark bars? 😊",
+            "Are you ready for love? 🌹"
         ]
         return random.choice(question_responses)
 
@@ -597,6 +616,17 @@ def webhook():
         
         # Отправляем основной ответ с задержкой через Twilio API
         bot.send_delayed_message(sender, response_text, delay)
+        
+        # Если это первое сообщение (приветствие), отправляем второй вопрос через 5-10 секунд
+        state = user_states.get(sender, {})
+        last_response_type = state.get('last_response_type', 'none')
+        
+        if last_response_type == 'greeting' and len(state.get('conversation_history', [])) <= 2:
+            # Отправляем вопрос "Как дела?" через 5-10 секунд
+            follow_up_question = bot.get_question_response("")
+            follow_up_delay = delay + random.randint(5, 10)
+            bot.send_delayed_message(sender, follow_up_question, follow_up_delay)
+            logger.info(f"Запланирован второй вопрос через {follow_up_delay} секунд: {follow_up_question}")
         
         # Возвращаем пустой ответ (Twilio получит 200 OK)
         return '', 200
