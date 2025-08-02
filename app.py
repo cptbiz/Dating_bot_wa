@@ -12,7 +12,8 @@ import tempfile
 import re
 import time
 import random
-from datetime import datetime
+import threading
+from datetime import datetime, timedelta
 from flask import Flask, request, jsonify
 from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
@@ -285,6 +286,98 @@ Current conversation context: You're chatting with an American man on a dating w
         
         return "I'd love to keep our conversation positive and respectful! 😊"
 
+    def get_random_delay(self):
+        """Получение случайной задержки 20-40 секунд"""
+        return random.randint(20, 40)
+
+    def should_send_follow_up(self):
+        """Определяет, нужно ли отправить второе сообщение (30% вероятность)"""
+        return random.random() < 0.3
+
+    def get_follow_up_message(self):
+        """Получение второго сообщения"""
+        follow_up_messages = [
+            "What about you? What would you like to know about me? 😊",
+            "I'm curious about you too! What questions do you have? 💕",
+            "Tell me something about yourself! I'd love to know more 🌹",
+            "What interests you most about me? 😊",
+            "I want to know you better too! What's on your mind? 💕",
+            "What would you like to know? I'm an open book! 😊",
+            "Ask me anything! I'm here to chat 💕",
+            "What's your story? I'm listening! 🌹"
+        ]
+        return random.choice(follow_up_messages)
+
+    def get_auto_message(self):
+        """Получение авто-сообщения через час"""
+        auto_messages = [
+            "Hey! I was thinking about our conversation earlier 💕",
+            "Hi! How's your day going? 😊",
+            "Hello! I hope you're having a wonderful day 🌹",
+            "Hey there! Just wanted to say hi 💕",
+            "Hi! What's new with you? 😊",
+            "Hello! I'm curious how your day is going 🌹",
+            "Hey! I enjoyed our chat earlier 💕",
+            "Hi! How are things with you? 😊"
+        ]
+        return random.choice(auto_messages)
+
+    def send_delayed_message(self, user_id, message, delay_seconds):
+        """Отправка сообщения с задержкой"""
+        def send_message():
+            time.sleep(delay_seconds)
+            try:
+                if twilio_client:
+                    twilio_client.messages.create(
+                        body=message,
+                        from_=TWILIO_PHONE_NUMBER,
+                        to=user_id
+                    )
+                    logger.info(f"Отправлено отложенное сообщение пользователю {user_id}: {message}")
+            except Exception as e:
+                logger.error(f"Ошибка отправки отложенного сообщения: {e}")
+        
+        # Запускаем в отдельном потоке
+        thread = threading.Thread(target=send_message)
+        thread.daemon = True
+        thread.start()
+
+    def schedule_auto_message(self, user_id):
+        """Планирование авто-сообщения через час"""
+        def send_auto_message():
+            time.sleep(3600)  # 1 час
+            try:
+                # Проверяем, не писал ли пользователь за последний час
+                state = user_states.get(user_id, {})
+                last_user_message = state.get('last_user_message_time')
+                
+                if last_user_message:
+                    last_time = datetime.fromisoformat(last_user_message)
+                    if datetime.now() - last_time < timedelta(hours=1):
+                        return  # Пользователь писал недавно
+                
+                # Проверяем ограничение 24 часа
+                if last_user_message:
+                    last_time = datetime.fromisoformat(last_user_message)
+                    if datetime.now() - last_time > timedelta(hours=24):
+                        return  # Прошло больше 24 часов
+                
+                auto_message = self.get_auto_message()
+                if twilio_client:
+                    twilio_client.messages.create(
+                        body=auto_message,
+                        from_=TWILIO_PHONE_NUMBER,
+                        to=user_id
+                    )
+                    logger.info(f"Отправлено авто-сообщение пользователю {user_id}: {auto_message}")
+            except Exception as e:
+                logger.error(f"Ошибка отправки авто-сообщения: {e}")
+        
+        # Запускаем в отдельном потоке
+        thread = threading.Thread(target=send_auto_message)
+        thread.daemon = True
+        thread.start()
+
     def get_response(self, user_id, message, media_url=None):
         """Получение ответа бота - КОРОТКИЙ И ЕСТЕСТВЕННЫЙ"""
         try:
@@ -319,8 +412,12 @@ Current conversation context: You're chatting with an American man on a dating w
             # Обновляем состояние пользователя
             user_states[user_id] = {
                 'conversation_history': conversation_history[-10:],  # Храним последние 10 сообщений
-                'last_interaction': datetime.now().isoformat()
+                'last_interaction': datetime.now().isoformat(),
+                'last_user_message_time': datetime.now().isoformat()
             }
+            
+            # Планируем авто-сообщение через час
+            self.schedule_auto_message(user_id)
             
             return response
             
@@ -351,6 +448,16 @@ def webhook():
         resp = MessagingResponse()
         resp.message(response_text)
         
+        # Добавляем задержку и второе сообщение
+        delay = bot.get_random_delay()
+        logger.info(f"Задержка ответа: {delay} секунд")
+        
+        # Отправляем второе сообщение с задержкой если нужно
+        if bot.should_send_follow_up():
+            follow_up_message = bot.get_follow_up_message()
+            bot.send_delayed_message(sender, follow_up_message, delay + random.randint(10, 20))
+            logger.info(f"Запланировано второе сообщение через {delay + random.randint(10, 20)} секунд")
+        
         return str(resp)
         
     except Exception as e:
@@ -377,14 +484,17 @@ def index():
     """Главная страница"""
     return jsonify({
         'message': f'WhatsApp Bot для BeHappy2Day - {bot.name}',
-        'version': '2.2.0',
+        'version': '2.3.0',
         'features': [
             'GPT-4 Turbo integration',
             'Voice message transcription',
             'Natural conversation flow',
             'American men 40+ targeting',
             'Enhanced security validation',
-            'Short human-like responses'
+            'Short human-like responses',
+            'Natural delays (20-40 seconds)',
+            'Follow-up messages',
+            'Auto-messages after 1 hour'
         ],
         'endpoints': {
             'webhook': '/webhook',
