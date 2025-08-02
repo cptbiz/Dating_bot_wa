@@ -303,9 +303,20 @@ Current conversation context: You're chatting with an American man on a dating w
         
         return "I'd love to keep our conversation positive and respectful! 😊"
 
-    def get_random_delay(self):
-        """Получение случайной задержки 12-22 секунды"""
-        return random.randint(12, 22)
+    def get_random_delay(self, message_length=None):
+        """Получение динамической задержки 7-15 секунд в зависимости от длины сообщения"""
+        if message_length is None:
+            return random.randint(7, 15)
+        
+        # Короткие сообщения (1-3 слова) - быстрее
+        if message_length <= 20:
+            return random.randint(7, 10)
+        # Средние сообщения (4-7 слов) - средняя скорость
+        elif message_length <= 50:
+            return random.randint(10, 13)
+        # Длинные сообщения (8+ слов) - медленнее
+        else:
+            return random.randint(13, 15)
 
     def get_response(self, user_id, message, media_url=None):
         """Получение ответа бота - КОРОТКИЙ И ЕСТЕСТВЕННЫЙ"""
@@ -334,7 +345,13 @@ Current conversation context: You're chatting with an American man on a dating w
             conversation_history.append(f"User: {message}")
             
             # Определяем тип ответа
-            if last_response_type == 'question' and '?' in message.lower():
+            message_lower = message.lower().strip()
+            
+            # Если пользователь задает вопрос - отвечаем на него
+            if '?' in message_lower:
+                response = self.get_greeting_response(message)
+                response_type = 'greeting'
+            elif last_response_type == 'question':
                 # Пользователь ответил на вопрос - даем личную историю
                 response = self.get_personal_story()
                 response_type = 'story'
@@ -531,9 +548,9 @@ def webhook():
         # Получение ответа от бота
         response_text = bot.get_response(sender, incoming_msg, media_url)
         
-        # Получаем случайную задержку
-        delay = bot.get_random_delay()
-        logger.info(f"Задержка ответа: {delay} секунд")
+        # Получаем динамическую задержку в зависимости от длины сообщения
+        delay = bot.get_random_delay(len(incoming_msg))
+        logger.info(f"Задержка ответа: {delay} секунд (длина сообщения: {len(incoming_msg)} символов)")
         
         # Отправляем основной ответ с задержкой через Twilio API
         bot.send_delayed_message(sender, response_text, delay)
@@ -573,7 +590,7 @@ def index():
             'American men 40+ targeting',
             'Enhanced security validation',
             'Short human-like responses',
-            'Natural delays (20-40 seconds)',
+            'Dynamic delays (7-15 seconds based on message length)',
             'Follow-up messages',
             'Auto-messages after 1 hour'
         ],
