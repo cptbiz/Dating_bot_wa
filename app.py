@@ -10,6 +10,8 @@ import json
 import logging
 import tempfile
 import re
+import time
+import random
 from datetime import datetime
 from flask import Flask, request, jsonify
 from twilio.rest import Client
@@ -84,9 +86,11 @@ class DatingGirlBot:
             'values': 'family, honesty, mutual respect, shared interests'
         }
         
-        # Системный промпт для GPT-4 Turbo
+        # Системный промпт для GPT-4 Turbo - КОРОТКИЕ ОТВЕТЫ
         self.system_prompt = f"""
 You are {self.name}, a {self.age}-year-old woman from {self.country}. You are intelligent, caring, and looking for a serious relationship with an American man aged 40+.
+
+IMPORTANT: Keep responses SHORT and NATURAL (1-2 sentences max). Like a real person typing on WhatsApp.
 
 Your personality:
 - Warm, caring, and intelligent
@@ -106,10 +110,18 @@ Your background:
 Communication style:
 - Use emojis naturally (💕, 😊, 🌹, 💋, etc.)
 - Be warm and engaging
-- Ask follow-up questions
-- Show interest in his responses
-- Keep responses conversational, not too long
+- Keep responses SHORT (1-2 sentences)
 - Be authentic and genuine
+- Sometimes ask follow-up questions
+- Show interest in his responses
+
+RESPONSE RULES:
+- MAXIMUM 2 sentences per response
+- Keep it casual and natural
+- Use simple, everyday language
+- Add 1-2 emojis naturally
+- Sometimes just acknowledge and ask a question
+- Be conversational, not formal
 
 IMPORTANT RULES:
 - NEVER ask for money, gifts, or financial help
@@ -121,7 +133,7 @@ IMPORTANT RULES:
 - Ask about his interests, work, family, hobbies
 - Share your own interests and experiences naturally
 
-Current conversation context: You're chatting with an American man on a dating website. Keep the conversation flowing naturally while gathering information about him.
+Current conversation context: You're chatting with an American man on a dating website. Keep responses SHORT and NATURAL like a real person.
 """
 
     def validate_audio_url(self, audio_url):
@@ -192,7 +204,7 @@ Current conversation context: You're chatting with an American man on a dating w
             return None
 
     def get_gpt_response(self, user_message, conversation_history):
-        """Получение ответа от GPT-4 Turbo"""
+        """Получение ответа от GPT-4 Turbo - КОРОТКИЙ"""
         try:
             if not openai_client:
                 return self.get_fallback_response(user_message)
@@ -207,8 +219,8 @@ Current conversation context: You're chatting with an American man on a dating w
             response = openai_client.chat.completions.create(
                 model="gpt-4-turbo-preview",
                 messages=messages,
-                max_tokens=150,
-                temperature=0.8,
+                max_tokens=80,  # Уменьшил для коротких ответов
+                temperature=0.9,  # Увеличил для более естественных ответов
                 presence_penalty=0.1,
                 frequency_penalty=0.1
             )
@@ -220,13 +232,18 @@ Current conversation context: You're chatting with an American man on a dating w
             return self.get_fallback_response(user_message)
 
     def get_fallback_response(self, user_message):
-        """Резервные ответы если GPT недоступен"""
+        """Резервные ответы если GPT недоступен - КОРОТКИЕ"""
         fallback_responses = [
             "That's really interesting! Tell me more about yourself 💕",
             "I love hearing about your experiences! What else do you enjoy doing? 😊",
             "You seem like such a wonderful person! What are you looking for in a relationship? 🌹",
             "I'm really enjoying our conversation! What makes you happy? 💕",
-            "You sound amazing! I'd love to know more about your life and interests 😊"
+            "You sound amazing! I'd love to know more about your life and interests 😊",
+            "That's so nice to hear! What do you like to do for fun? 🌹",
+            "I love that! Tell me more about yourself 💕",
+            "You sound wonderful! What brings you joy? 😊",
+            "That's really sweet! What are your hobbies? 🌹",
+            "I'm enjoying our chat! What's your favorite thing to do? 💕"
         ]
         
         import random
@@ -253,13 +270,13 @@ Current conversation context: You're chatting with an American man on a dating w
         return violations
 
     def handle_violation(self, violations):
-        """Обработка нарушений"""
+        """Обработка нарушений - КОРОТКИЕ ОТВЕТЫ"""
         violation_responses = {
-            'contact_info': "I'd love to chat more, but I prefer to keep our conversation here for now! Maybe we can meet in person someday? 😊",
-            'money_requests': "I'm not interested in money or gifts - I'm looking for a genuine connection with someone special! 💕",
-            'political': "I prefer to keep our conversation light and positive! Let's focus on getting to know each other better 😊",
+            'contact_info': "I'd love to chat more here for now! Maybe we can meet in person someday? 😊",
+            'money_requests': "I'm looking for a genuine connection, not money or gifts! 💕",
+            'political': "I prefer to keep our conversation light and positive! 😊",
             'inappropriate': "I prefer to keep our conversation respectful and classy! 😊",
-            'spam': "I'm here for genuine conversations and connections, not business opportunities! 💕"
+            'spam': "I'm here for genuine conversations, not business opportunities! 💕"
         }
         
         for violation in violations:
@@ -269,7 +286,7 @@ Current conversation context: You're chatting with an American man on a dating w
         return "I'd love to keep our conversation positive and respectful! 😊"
 
     def get_response(self, user_id, message, media_url=None):
-        """Получение ответа бота"""
+        """Получение ответа бота - КОРОТКИЙ И ЕСТЕСТВЕННЫЙ"""
         try:
             # Обработка голосового сообщения
             if media_url and self.validate_audio_url(media_url):
@@ -360,13 +377,14 @@ def index():
     """Главная страница"""
     return jsonify({
         'message': f'WhatsApp Bot для BeHappy2Day - {bot.name}',
-        'version': '2.1.0',
+        'version': '2.2.0',
         'features': [
             'GPT-4 Turbo integration',
             'Voice message transcription',
             'Natural conversation flow',
             'American men 40+ targeting',
-            'Enhanced security validation'
+            'Enhanced security validation',
+            'Short human-like responses'
         ],
         'endpoints': {
             'webhook': '/webhook',
