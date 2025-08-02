@@ -444,21 +444,22 @@ def webhook():
         # Получение ответа от бота
         response_text = bot.get_response(sender, incoming_msg, media_url)
         
-        # Создание ответа
-        resp = MessagingResponse()
-        resp.message(response_text)
-        
-        # Добавляем задержку и второе сообщение
+        # Получаем случайную задержку
         delay = bot.get_random_delay()
         logger.info(f"Задержка ответа: {delay} секунд")
         
-        # Отправляем второе сообщение с задержкой если нужно
+        # Отправляем основной ответ с задержкой через Twilio API
+        bot.send_delayed_message(sender, response_text, delay)
+        
+        # Отправляем второе сообщение с дополнительной задержкой если нужно
         if bot.should_send_follow_up():
             follow_up_message = bot.get_follow_up_message()
-            bot.send_delayed_message(sender, follow_up_message, delay + random.randint(10, 20))
-            logger.info(f"Запланировано второе сообщение через {delay + random.randint(10, 20)} секунд")
+            follow_up_delay = delay + random.randint(10, 20)
+            bot.send_delayed_message(sender, follow_up_message, follow_up_delay)
+            logger.info(f"Запланировано второе сообщение через {follow_up_delay} секунд")
         
-        return str(resp)
+        # Возвращаем пустой ответ (Twilio получит 200 OK)
+        return '', 200
         
     except Exception as e:
         logger.error(f"Ошибка в webhook: {e}")
