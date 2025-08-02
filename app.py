@@ -300,8 +300,8 @@ Current conversation context: You're chatting with an American man on a dating w
         return "I'd love to keep our conversation positive and respectful! 😊"
 
     def get_random_delay(self):
-        """Получение случайной задержки 20-40 секунд"""
-        return random.randint(20, 40)
+        """Получение случайной задержки 12-22 секунды"""
+        return random.randint(12, 22)
 
     def get_response(self, user_id, message, media_url=None):
         """Получение ответа бота - КОРОТКИЙ И ЕСТЕСТВЕННЫЙ"""
