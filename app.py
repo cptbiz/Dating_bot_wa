@@ -76,11 +76,11 @@ class DatingGirlBot:
     def __init__(self):
         self.name = "Elena"  # Имя девушки
         self.age = 28
-        self.country = "Ukraine"
-        self.city = "Kyiv"
+        self.country = "Russia"
+        self.city = "Moscow"
         self.profession = "Marketing Manager"
         self.interests = ["traveling", "cooking", "reading", "yoga", "photography"]
-        self.languages = ["English", "Ukrainian", "Russian"]
+        self.languages = ["English", "Russian"]
         
         # Персональность девушки
         self.personality = {
@@ -272,6 +272,12 @@ Current conversation context: You're chatting with an American man on a dating w
             "You're amazing 🌹",
             "I'm attracted to you 💕",
             "You're perfect 😊",
+            "I love you 💕",
+            "You're handsome 😊",
+            "I want you 🌹",
+            "You're amazing 💕",
+            "I'm yours 😊",
+            "You're mine 🌹",
             "How are you? 😊",
             "Tell me about you 💕",
             "What interests you? 🌹"
@@ -365,8 +371,10 @@ Current conversation context: You're chatting with an American man on a dating w
                 response = self.get_greeting_response(message)
                 response_type = 'greeting'
             elif last_response_type == 'question':
-                # Пользователь ответил на вопрос - даем личную историю
-                response = self.get_personal_story()
+                # Пользователь ответил на вопрос - даем личную историю + сразу вопрос
+                story = self.get_personal_story()
+                question = self.get_question_response(message)
+                response = f"{story} {question}"
                 response_type = 'story'
             elif last_response_type == 'story':
                 # После истории задаем вопрос
@@ -429,7 +437,7 @@ Current conversation context: You're chatting with an American man on a dating w
         elif 'how old are you' in message_lower:
             return "28 😊"
         elif 'where are you from' in message_lower:
-            return "Ukraine 💕"
+            return "Russia 💕"
         elif 'john' in message_lower:
             return "Hi John 💕"
         elif 'great' in message_lower or 'good' in message_lower:
@@ -468,7 +476,13 @@ Current conversation context: You're chatting with an American man on a dating w
             "I love romance 🌹",
             "I want to cuddle 💕",
             "I love dark bars 😊",
-            "I'm romantic 🌹"
+            "I'm romantic 🌹",
+            "I'm from Moscow 💕",
+            "I love Russian men 😊",
+            "I'm passionate 🌹",
+            "I love romance 💕",
+            "I'm single and ready 😊",
+            "I want love 🌹"
         ]
         return random.choice(personal_stories)
 
@@ -495,7 +509,14 @@ Current conversation context: You're chatting with an American man on a dating w
             "Do you like cuddling? 🌹",
             "Are you passionate? 💕",
             "Do you like dark bars? 😊",
-            "Are you ready for love? 🌹"
+            "Are you ready for love? 🌹",
+            "Do you like Russian girls? 💕",
+            "Are you handsome? 😊",
+            "Do you like Moscow? 🌹",
+            "Are you romantic? 💕",
+            "Do you like kissing? 😊",
+            "Are you single? 🌹",
+            "Do you like cuddling? 💕"
         ]
         return random.choice(question_responses)
 
