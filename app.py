@@ -513,13 +513,6 @@ def webhook():
         # Отправляем основной ответ с задержкой через Twilio API
         bot.send_delayed_message(sender, response_text, delay)
         
-        # Отправляем второе сообщение с дополнительной задержкой если нужно
-        if bot.should_send_follow_up():
-            follow_up_message = bot.get_follow_up_message()
-            follow_up_delay = delay + random.randint(10, 20)
-            bot.send_delayed_message(sender, follow_up_message, follow_up_delay)
-            logger.info(f"Запланировано второе сообщение через {follow_up_delay} секунд")
-        
         # Возвращаем пустой ответ (Twilio получит 200 OK)
         return '', 200
         
