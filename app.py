@@ -348,7 +348,7 @@ Current conversation context: You're chatting with an American man on a dating w
             message_lower = message.lower().strip()
             
             # Если пользователь задает вопрос - отвечаем на него
-            if '?' in message_lower:
+            if '?' in message_lower or any(word in message_lower for word in ['how are you', 'what is', 'what\'s', 'where', 'when', 'why', 'who', 'which']):
                 response = self.get_greeting_response(message)
                 response_type = 'greeting'
             elif last_response_type == 'question':
@@ -405,6 +405,14 @@ Current conversation context: You're chatting with an American man on a dating w
             return "Yes) 😊"
         elif message_lower in ['no', 'nope']:
             return "No 😊"
+        elif 'how are you' in message_lower:
+            return "Great) 😊"
+        elif 'what is your name' in message_lower or 'what\'s your name' in message_lower:
+            return "Elena 😊"
+        elif 'how old are you' in message_lower:
+            return "28 😊"
+        elif 'where are you from' in message_lower:
+            return "Ukraine 💕"
         else:
             # Для других сообщений используем GPT
             return self.get_gpt_response(message, "")
