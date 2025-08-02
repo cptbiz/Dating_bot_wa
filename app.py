@@ -111,7 +111,6 @@ Your background:
 - Languages: {', '.join(self.languages)}
 
 Communication style:
-- Use flirty emojis naturally (💕, 😊, 🌹, 💋, 😘, 💋, 🥰, etc.)
 - Be warm, engaging, and slightly flirty
 - Keep responses VERY SHORT (1-3 words)
 - Be authentic and genuine
@@ -123,7 +122,6 @@ RESPONSE RULES:
 - MAXIMUM 3 words per response
 - Keep it casual and natural
 - Use simple, everyday language
-- Add 1 flirty emoji naturally
 - Sometimes just acknowledge with "Great)" or "Yes)"
 - Be conversational, not formal
 - Answer questions directly and honestly
@@ -141,21 +139,21 @@ IMPORTANT RULES:
 - Be flirty but respectful and classy
 
 EXAMPLES OF GOOD RESPONSES:
-- "Hi 😊"
-- "Hello 💕"
-- "Great) 😊"
-- "Yes) 💕"
-- "Sure 😊"
-- "I do 💕"
-- "Tell me about you 😊"
-- "What interests you? 💕"
-- "Good 😊"
-- "Fine 💕"
-- "Ok 😊"
-- "Well 💕"
-- "You're cute 💕"
-- "I like you 😊"
-- "You're sweet 🌹"
+- "Hi"
+- "Hello"
+- "Great)"
+- "Yes)"
+- "Sure"
+- "I do"
+- "Tell me about you"
+- "What interests you?"
+- "Good"
+- "Fine"
+- "Ok"
+- "Well"
+- "You're cute"
+- "I like you"
+- "You're sweet"
 
 Current conversation context: You're chatting with an American man on a dating website. Be flirty, attractive, and keep responses VERY SHORT and NATURAL like a real person.
 """
@@ -258,29 +256,29 @@ Current conversation context: You're chatting with an American man on a dating w
     def get_fallback_response(self, user_message):
         """Резервные ответы если GPT недоступен - ФЛИРТУЮЩИЕ"""
         fallback_responses = [
-            "Hi 😊",
-            "Hello 💕",
-            "Great) 😊",
-            "Yes) 💕",
-            "Sure 😊",
-            "I do 💕",
-            "You're cute 💕",
-            "I like you 😊",
-            "You're sweet 🌹",
-            "You're handsome 💕",
-            "I want you 😊",
-            "You're amazing 🌹",
-            "I'm attracted to you 💕",
-            "You're perfect 😊",
-            "I love you 💕",
-            "You're handsome 😊",
-            "I want you 🌹",
-            "You're amazing 💕",
-            "I'm yours 😊",
-            "You're mine 🌹",
-            "How are you? 😊",
-            "Tell me about you 💕",
-            "What interests you? 🌹"
+            "Hi",
+            "Hello",
+            "Great)",
+            "Yes)",
+            "Sure",
+            "I do",
+            "You're cute",
+            "I like you",
+            "You're sweet",
+            "You're handsome",
+            "I want you",
+            "You're amazing",
+            "I'm attracted to you",
+            "You're perfect",
+            "I love you",
+            "You're handsome",
+            "I want you",
+            "You're amazing",
+            "I'm yours",
+            "You're mine",
+            "How are you?",
+            "Tell me about you",
+            "What interests you?"
         ]
         
         import random
@@ -309,18 +307,18 @@ Current conversation context: You're chatting with an American man on a dating w
     def handle_violation(self, violations):
         """Обработка нарушений - КОРОТКИЕ ОТВЕТЫ"""
         violation_responses = {
-            'contact_info': "I'd love to chat more here for now! Maybe we can meet in person someday? 😊",
-            'money_requests': "I'm looking for a genuine connection, not money or gifts! 💕",
-            'political': "I prefer to keep our conversation light and positive! 😊",
-            'inappropriate': "I prefer to keep our conversation respectful and classy! 😊",
-            'spam': "I'm here for genuine conversations, not business opportunities! 💕"
+            'contact_info': "I'd love to chat more here for now! Maybe we can meet in person someday?",
+            'money_requests': "I'm looking for a genuine connection, not money or gifts!",
+            'political': "I prefer to keep our conversation light and positive!",
+            'inappropriate': "I prefer to keep our conversation respectful and classy!",
+            'spam': "I'm here for genuine conversations, not business opportunities!"
         }
         
         for violation in violations:
             if violation in violation_responses:
                 return violation_responses[violation]
         
-        return "I'd love to keep our conversation positive and respectful! 😊"
+        return "I'd love to keep our conversation positive and respectful!"
 
     def get_random_delay(self, message_length=None):
         """Получение динамической задержки 7-15 секунд в зависимости от длины сообщения"""
@@ -420,33 +418,33 @@ Current conversation context: You're chatting with an American man on a dating w
         
         # Простые приветствия
         if message_lower in ['hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening']:
-            return "Hi 😊"
+            return "Hi"
         elif message_lower in ['how are you', 'how are you doing', 'how do you do']:
-            return "Great) 😊"
+            return "Great)"
         elif message_lower in ['what\'s up', 'sup', 'wassup']:
-            return "Hey 😊"
+            return "Hey"
         elif message_lower in ['good', 'fine', 'ok', 'okay', 'well']:
-            return "Great) 😊"
+            return "Great)"
         elif message_lower in ['yes', 'yeah', 'yep']:
-            return "Yes) 😊"
+            return "Yes)"
         elif message_lower in ['no', 'nope']:
-            return "No 😊"
+            return "No"
         elif 'how are you' in message_lower:
-            return "Great) 😊"
+            return "Great)"
         elif 'what is your name' in message_lower or 'what\'s your name' in message_lower:
-            return "Elena 😊"
+            return "Elena"
         elif 'how old are you' in message_lower:
-            return "28 😊"
+            return "28"
         elif 'where are you from' in message_lower:
-            return "Russia 💕"
+            return "Russia"
         elif 'john' in message_lower:
-            return "Hi John 💕"
+            return "Hi John"
         elif 'great' in message_lower or 'good' in message_lower:
-            return "Great) 😊"
+            return "Great)"
         elif 'i\'m good' in message_lower or 'i am good' in message_lower:
-            return "Great) 😊"
+            return "Great)"
         elif 'and you' in message_lower:
-            return "Great) 😊"
+            return "Great)"
         else:
             # Для других сообщений используем GPT
             return self.get_gpt_response(message, "")
@@ -454,36 +452,36 @@ Current conversation context: You're chatting with an American man on a dating w
     def get_personal_story(self):
         """Получение личной истории"""
         personal_stories = [
-            "I love cooking 💕",
-            "I enjoy reading 😊",
-            "I like traveling 🌹",
-            "I love yoga 💕",
-            "I enjoy photography 😊",
-            "I like music 🌹",
-            "I love walking 💕",
-            "I enjoy coffee 😊",
-            "I like movies 🌹",
-            "I love nature 💕",
-            "I'm romantic 💕",
-            "I love dancing 😊",
-            "I'm passionate 🌹",
-            "I love life 💕",
-            "I'm looking for love 💕",
-            "I want romance 😊",
-            "I'm single and ready 🌹",
-            "I love cuddling 💕",
-            "I love kissing 💕",
-            "I'm passionate 😊",
-            "I love romance 🌹",
-            "I want to cuddle 💕",
-            "I love dark bars 😊",
-            "I'm romantic 🌹",
-            "I'm from Moscow 💕",
-            "I love Russian men 😊",
-            "I'm passionate 🌹",
-            "I love romance 💕",
-            "I'm single and ready 😊",
-            "I want love 🌹"
+            "I love cooking",
+            "I enjoy reading",
+            "I like traveling",
+            "I love yoga",
+            "I enjoy photography",
+            "I like music",
+            "I love walking",
+            "I enjoy coffee",
+            "I like movies",
+            "I love nature",
+            "I'm romantic",
+            "I love dancing",
+            "I'm passionate",
+            "I love life",
+            "I'm looking for love",
+            "I want romance",
+            "I'm single and ready",
+            "I love cuddling",
+            "I love kissing",
+            "I'm passionate",
+            "I love romance",
+            "I want to cuddle",
+            "I love dark bars",
+            "I'm romantic",
+            "I'm from Moscow",
+            "I love Russian men",
+            "I'm passionate",
+            "I love romance",
+            "I'm single and ready",
+            "I want love"
         ]
         return random.choice(personal_stories)
 
@@ -537,7 +535,7 @@ Current conversation context: You're chatting with an American man on a dating w
                 # Добавляем эмодзи только через 2-3 сообщения
                 message_count = len(state.get('conversation_history', []))
                 if message_count % 3 == 0:  # Каждое 3-е сообщение
-                    emojis = ["😊", "💕", "🌹"]
+                    emojis = ["", "", ""]
                     question += f" {random.choice(emojis)}"
                 
                 return question
@@ -549,7 +547,7 @@ Current conversation context: You're chatting with an American man on a dating w
                 # Добавляем эмодзи только через 2-3 сообщения
                 message_count = len(state.get('conversation_history', []))
                 if message_count % 3 == 0:  # Каждое 3-е сообщение
-                    emojis = ["😊", "💕", "🌹"]
+                    emojis = ["", "", ""]
                     question += f" {random.choice(emojis)}"
                 
                 return question
@@ -564,32 +562,32 @@ Current conversation context: You're chatting with an American man on a dating w
     def get_follow_up_message(self):
         """Получение второго сообщения"""
         follow_up_messages = [
-            "How are you doing today? 😊",
-            "What's new with you? 💕",
-            "How was your day? 🌹",
-            "What are you up to? 😊",
-            "How are things going? 💕",
-            "What's happening in your life? 🌹",
-            "How are you feeling today? 😊",
-            "What's your day been like? 💕"
+            "How are you doing today?",
+            "What's new with you?",
+            "How was your day?",
+            "What are you up to?",
+            "How are things going?",
+            "What's happening in your life?",
+            "How are you feeling today?",
+            "What's your day been like?"
         ]
         return random.choice(follow_up_messages)
 
     def get_auto_message(self):
         """Получение авто-сообщения через час"""
         auto_messages = [
-            "Hey 💕",
-            "Hi 😊",
-            "Hello 🌹",
-            "Hey there 💕",
-            "Hi 😊",
-            "Hello 🌹",
-            "Hey 💕",
-            "Hi 😊",
-            "Miss you 💕",
-            "Thinking of you 😊",
-            "Hey handsome 🌹",
-            "Hi sweetie 💕"
+            "Hey",
+            "Hi",
+            "Hello",
+            "Hey there",
+            "Hi",
+            "Hello",
+            "Hey",
+            "Hi",
+            "Miss you",
+            "Thinking of you",
+            "Hey handsome",
+            "Hi sweetie"
         ]
         return random.choice(auto_messages)
 
